@@ -25,3 +25,21 @@
 - TypeScript `noUncheckedIndexedAccess` is strict but catches real bugs — array lookups return `T | undefined` by default, which forced me to be explicit about every array access in the engine.
 **Blockers / what I'm stuck on:** None. All 12 tests green. Awaiting Sham's go-ahead for Part 2 (database layer).
 **Plan for tomorrow:** Part 2 — PostgreSQL schema, plain SQL migrations, repository layer for `audits` + `leads` tables.
+
+## Day 4 — 2026-05-09
+**Hours worked:** 5
+**What I did:** Completed Parts 2 and 3 back to back. Part 2 was the full database layer — two plain SQL migration files (`001_create_audits.sql`, `002_create_leads.sql`), a custom migration runner script with a `_migrations` tracking table and per-file transactions, the `pg.Pool` connection wrapper with a fail-fast env guard, the `AppError` class, and both repositories (`auditRepo`, `leadRepo`). Part 3 was the Express skeleton — `asyncHandler`, global error middleware, three rate limiters (`auditLimiter`, `leadLimiter`, `defaultLimiter`), the `GET /api/health` route, a full rewrite of `index.ts` as an app factory, and a proper `server.ts` entry point that pings the database before binding the port. `tsc --noEmit` exits 0, all 12 Vitest tests still green.
+
+On the frontend side, I finalized the design direction: a **terminal-based UI** — dark background, monospaced font, command-line aesthetic with typed-out output and structured grid panels for the audit results. The goal is to make the tool feel like something a senior engineer would actually use rather than a generic SaaS dashboard. The design gives an immediate technical credibility signal to the kind of CTOs and engineering leads who would be evaluating it.
+
+**What I learned:**
+- Writing the migration runner from scratch was more instructive than reaching for a library. The key insight is that a migration system only needs two things: an ordered list of files and a record of which ones have already run. Every migration framework is just that pattern with more surface area around it.
+- The `ON CONFLICT DO NOTHING` + fallback SELECT pattern for idempotent inserts is cleaner than checking for existence first — it eliminates the race condition between the check and the insert entirely.
+- PostgreSQL's `jsonb_set` lets you patch a single field inside a stored JSON column without deserializing and re-serializing the whole document. I used this for the async AI summary update so the audit row doesn't need a full rewrite when the summary arrives.
+- Exporting the Express app as a factory function (`createApp()`) rather than a singleton is the correct pattern for testability — you can call `createApp()` in a test without binding a real port.
+
+**Blockers / what I'm stuck on:** Hit a real mental wall at the start of Part 2 around the denormalized column design on the `audits` table. The assignment specifies storing the full `AuditReport` as JSONB, which is flexible, but you still want fast analytics queries (e.g. "show all high-savings audits") without scanning JSONB on every request. The solution was to extract specific scalar values (`total_monthly_savings`, `health_grade`, `credex_recommended`, etc.) as real columns at write time — the repository layer pulls them from the report before the INSERT. It's a classic CQRS trade-off: you pay a tiny write cost to get fast read paths. Once I framed it that way the design became obvious, but it took me a moment to see why the JSONB-only approach would hurt later.
+
+Part 3 had its own small blocker: `trust proxy` on the Express app. The rate limiter reads the client IP, and behind a reverse proxy (Vercel, nginx) the real IP is in `X-Forwarded-For`, not `req.socket.remoteAddress`. Without `app.set('trust proxy', 1)` the limiter would see the proxy IP and effectively rate-limit everyone together. It's a one-liner fix but an easy thing to skip in development and then discover in production.
+
+**Plan for tomorrow:** Part 4 — `POST /api/audit` (Zod schema, normalization middleware, handler, `auditService`, repo call, `shareId` response) and `GET /api/audit/:shareId` (public stripping of PII fields).
