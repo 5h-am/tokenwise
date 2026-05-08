@@ -1,0 +1,21 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE IF NOT EXISTS audits (
+  id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  share_id                UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+  input_json              JSONB NOT NULL,
+  report_json             JSONB NOT NULL,
+  total_monthly_savings   NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  total_annual_savings    NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  health_grade            TEXT NOT NULL,
+  health_raw_score        NUMERIC(5, 4) NOT NULL DEFAULT 0,
+  credex_recommended      BOOLEAN NOT NULL DEFAULT false,
+  tool_count              INT NOT NULL DEFAULT 0,
+  team_size               INT NOT NULL DEFAULT 0,
+  created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audits_share_id           ON audits(share_id);
+CREATE INDEX IF NOT EXISTS idx_audits_credex_recommended ON audits(credex_recommended);
+CREATE INDEX IF NOT EXISTS idx_audits_health_grade       ON audits(health_grade);
+CREATE INDEX IF NOT EXISTS idx_audits_monthly_savings    ON audits(total_monthly_savings DESC);
