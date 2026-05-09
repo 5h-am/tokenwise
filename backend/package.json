@@ -15,7 +15,6 @@
     "migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.36.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",

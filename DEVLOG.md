@@ -53,3 +53,12 @@ Part 3 had its own small blocker: `trust proxy` on the Express app. The rate lim
 - The combination of Resend for emails and Postgres `ON CONFLICT DO NOTHING` creates a robust, naturally idempotent system. If a user double-submits their email, the database silently ignores the second insert, preventing a duplicate email from being triggered.
 **Blockers / what I'm stuck on:** None. The lead flow is fully functional and type-safe.
 **Plan for tomorrow:** Part 6 — AI summary integration using the Anthropic API (with graceful fallbacks).
+
+## Day 5 — 2026-05-10
+**Hours worked:** 3
+**What I did:** Completed Part 6 (AI Summary) and Part 7 (Final Checks & CI). For the AI summary, I implemented an async call that extracts insights from the `AuditReport` and persists it. Because I didn't have free Anthropic credits, I decided to adapt the integration to use the Gemini free tier (`gemini-2.5-flash`) instead of `claude-sonnet-4-6`. Wrote the canonical 12 test descriptions into `TESTS.md` and ensured all tests, linting, and typechecks pass perfectly. 
+**What I learned:** 
+- Swapping LLM providers mid-stream was seamless because the service layer abstracts the specific AI request logic. 
+- Structuring prompt inputs carefully for Gemini (by formatting the report tools and opportunities into clean strings before the API call) yields concise, deterministic-feeling 100-word summaries.
+**Blockers / what I'm stuck on:** None. The backend is 100% complete and validated.
+**Plan for tomorrow:** Shift focus entirely to the frontend integration and the terminal-based UI buildout.
