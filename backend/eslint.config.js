@@ -15,6 +15,10 @@ export default [
         project: './tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
       },
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+      },
     },
     rules: {
       ...tseslint.configs['recommended']?.rules,

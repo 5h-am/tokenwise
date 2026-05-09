@@ -43,3 +43,13 @@ On the frontend side, I finalized the design direction: a **terminal-based UI** 
 Part 3 had its own small blocker: `trust proxy` on the Express app. The rate limiter reads the client IP, and behind a reverse proxy (Vercel, nginx) the real IP is in `X-Forwarded-For`, not `req.socket.remoteAddress`. Without `app.set('trust proxy', 1)` the limiter would see the proxy IP and effectively rate-limit everyone together. It's a one-liner fix but an easy thing to skip in development and then discover in production.
 
 **Plan for tomorrow:** Part 4 — `POST /api/audit` (Zod schema, normalization middleware, handler, `auditService`, repo call, `shareId` response) and `GET /api/audit/:shareId` (public stripping of PII fields).
+
+## Day 4 — 2026-05-09 (Session 2)
+**Hours worked:** 6
+**What I did:** Completed Parts 4 and 5 back to back. Part 4 implemented the Audit API (`POST /api/audit` and `GET /api/audit/:shareId`), including Zod schema validation, input normalization, and proper PII stripping for public reports. Part 5 added the Lead Capture API (`POST /api/leads`), which features an invisible honeypot field for abuse protection, idempotent database inserts to prevent duplicate leads, and integration with the Resend SDK for transactional emails. All typechecks, linting, and tests pass. Adhered strictly to the project's "no comments" policy.
+**What I learned:** 
+- TypeScript's `exactOptionalPropertyTypes` setting is extremely strict: defining a property as `companyName?: string` allows the property to be omitted, but forbids explicitly setting it to `undefined`. This required careful destructuring or explicit interface adjustments (`companyName?: string | undefined`) when passing normalized inputs down to the repository layer.
+- ESLint's `no-empty` rule catches intentionally empty `catch` blocks (often used for silent failure, like a non-critical email failing to send). Adding a simple `return;` statement resolves the linting error without adding clutter.
+- The combination of Resend for emails and Postgres `ON CONFLICT DO NOTHING` creates a robust, naturally idempotent system. If a user double-submits their email, the database silently ignores the second insert, preventing a duplicate email from being triggered.
+**Blockers / what I'm stuck on:** None. The lead flow is fully functional and type-safe.
+**Plan for tomorrow:** Part 6 — AI summary integration using the Anthropic API (with graceful fallbacks).

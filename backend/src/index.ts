@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import { healthRouter } from './routes/health.js';
+import { auditRouter } from './routes/audit.js';
+import { leadRouter } from './routes/lead.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { defaultLimiter } from './middleware/rateLimiter.js';
 
@@ -21,6 +23,8 @@ export function createApp() {
   app.use(defaultLimiter);
 
   app.use('/api/health', healthRouter);
+  app.use('/api/audit', auditRouter);
+  app.use('/api/leads', leadRouter);
 
   app.use(errorHandler);
 
