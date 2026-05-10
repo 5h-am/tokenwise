@@ -59,7 +59,9 @@ export type WasteCategory =
   | 'redundant_tool'
   | 'underutilised_seats'
   | 'token_waste'
-  | 'spend_anomaly';
+  | 'spend_anomaly'
+  | 'alternative_tool'
+  | 'credits_opportunity';
 
 export interface SavingsOpportunity {
   category: WasteCategory;

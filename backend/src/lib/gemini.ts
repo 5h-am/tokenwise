@@ -14,7 +14,7 @@ interface GeminiResponse {
   candidates?: GeminiCandidate[];
 }
 
-const GEMINI_MODEL = process.env['GEMINI_MODEL'] ?? 'gemini-2.5-flash';
+const GEMINI_MODEL = process.env['GEMINI_MODEL'] ?? 'gemini-1.5-flash';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 export async function requestGeminiSummary(report: AuditReport): Promise<string> {
@@ -30,13 +30,6 @@ export async function requestGeminiSummary(report: AuditReport): Promise<string>
       'x-goog-api-key': apiKey,
     },
     body: JSON.stringify({
-      systemInstruction: {
-        parts: [
-          {
-            text: 'You are an AI spend analyst. Be direct. No filler.',
-          },
-        ],
-      },
       contents: [
         {
           role: 'user',
@@ -48,13 +41,14 @@ export async function requestGeminiSummary(report: AuditReport): Promise<string>
         },
       ],
       generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 180,
+        temperature: 0.5,
       },
     }),
   });
 
   if (!response.ok) {
+    const errBody = await response.text();
+    console.error('[gemini] API error', response.status, errBody);
     throw new Error(`Gemini summary request failed with ${response.status}`);
   }
 
@@ -81,14 +75,15 @@ function buildSummaryPrompt(report: AuditReport): string {
     .join('\n');
 
   return [
-    'Write a plain-English audit summary of about 100 words for a finance leader.',
+    'You are an expert AI spend analyst. Please provide a highly detailed and analytical summary of the audit findings below.',
+    'Write a comprehensive, professional summary in plain English for a finance leader. Explain exactly where the waste is and the financial impact of the recommended changes. The output MUST be a complete paragraph of at least 100 words. Do not use bullet points.',
     'Use the data below. Mention the most important savings and risk signals. Do not invent facts.',
     `Current monthly spend: $${report.currentMonthlySpend}`,
     `Optimized monthly spend: $${report.optimizedMonthlySpend}`,
     `Monthly savings: $${report.totalMonthlySavings}`,
     `Annual savings: $${report.totalAnnualSavings}`,
     `Health grade: ${report.healthScore.letterGrade}`,
-    `Credex recommended: ${report.credexRecommended}`,
+    `Tokenwise recommended: ${report.credexRecommended}`,
     `Tools:\n${tools || 'none'}`,
     `Top opportunities:\n${opportunities || 'none'}`,
   ].join('\n\n');

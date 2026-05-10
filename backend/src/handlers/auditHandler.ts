@@ -4,15 +4,23 @@ import type { AuditInput } from '../engine/types.js';
 
 export async function createAuditHandler(req: Request, res: Response): Promise<void> {
   const input = req.body as AuditInput;
-  const result = await processAudit(input);
-  res.status(201).json(result);
+  const { shareId, report } = await processAudit(input);
+  const body: Record<string, unknown> = { shareId, ...report };
+  delete body['email'];
+  delete body['companyName'];
+  delete body['role'];
+
+  res.status(201).json(body);
 }
 
 export async function getAuditHandler(req: Request, res: Response): Promise<void> {
   const shareId = req.params['shareId'] as string;
-  const result = await getPublicAudit(shareId);
+  const { shareId: sid, report } = await getPublicAudit(shareId);
 
-  const publicResponse: Record<string, unknown> = { ...result };
+  const publicResponse: Record<string, unknown> = {
+    shareId: sid,
+    ...(report as unknown as Record<string, unknown>),
+  };
   delete publicResponse['email'];
   delete publicResponse['companyName'];
   delete publicResponse['role'];

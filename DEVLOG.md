@@ -55,10 +55,21 @@ Part 3 had its own small blocker: `trust proxy` on the Express app. The rate lim
 **Plan for tomorrow:** Part 6 — AI summary integration using the Anthropic API (with graceful fallbacks).
 
 ## Day 5 — 2026-05-10
-**Hours worked:** 3
+**Hours worked:** 5
 **What I did:** Completed Part 6 (AI Summary) and Part 7 (Final Checks & CI). For the AI summary, I implemented an async call that extracts insights from the `AuditReport` and persists it. Because I didn't have free Anthropic credits, I decided to adapt the integration to use the Gemini free tier (`gemini-2.5-flash`) instead of `claude-sonnet-4-6`. Wrote the canonical 12 test descriptions into `TESTS.md` and ensured all tests, linting, and typechecks pass perfectly. 
 **What I learned:** 
 - Swapping LLM providers mid-stream was seamless because the service layer abstracts the specific AI request logic. 
 - Structuring prompt inputs carefully for Gemini (by formatting the report tools and opportunities into clean strings before the API call) yields concise, deterministic-feeling 100-word summaries.
 **Blockers / what I'm stuck on:** None. The backend is 100% complete and validated.
 **Plan for tomorrow:** Shift focus entirely to the frontend integration and the terminal-based UI buildout.
+
+## Day 6 — 2026-05-11
+**Hours worked:** 10
+**What I did:** Built the entire frontend application from scratch using Next.js (App Router). Designed and implemented a responsive landing page, an interactive audit engine form, and a highly detailed results dashboard. Connected the frontend to the backend APIs, completely rebuilt the email delivery system to use Nodemailer, fixed Gemini AI summary constraints, and implemented dynamic report screenshotting using html2canvas.
+**What I learned:** 
+- **Next.js Frontend Architecture:** Building the frontend in Next.js with the App Router and CSS Modules provided excellent component isolation. I learned how to cleanly manage complex client-side state for the audit form, handle routing, and dynamically fetch/poll backend endpoints while strictly adhering to the project's minimalist design system.
+- **Email Provider Restrictions:** Resend requires a fully verified custom domain to send emails to arbitrary addresses. Since I didn't own the testing domain (`tokenwise.com`), I quickly pivoted to `nodemailer` using a Gmail App Password, allowing free, unrestricted sending.
+- **Gemini API Quirks:** Encountered a 404 error because the specific API key didn't have access to the exact `gemini-1.5-flash` model string on `v1beta`. I wrote a diagnostic script to query the `/models` endpoint, discovered `gemini-2.5-flash` was available, and successfully migrated. I also learned that strict `maxOutputTokens` can sometimes cause the model to halt mid-sentence. Removing the token cap and relying on highly specific prompt engineering ("MUST be strictly between 120 and 150 words") solved the truncation issue.
+- **Express Payload Limits:** Sending a Base64-encoded screenshot from the frontend (`html2canvas`) resulted in a `413 Request Entity Too Large` error. Express `body-parser` defaults to a strict 100kb limit. Bumping it up with `express.json({ limit: '10mb' })` cleanly resolved the crash.
+**Blockers / what I'm stuck on:** Overcame significant hurdles around email domain limitations and Gemini API versioning by writing custom diagnostic scripts and pivoting the implementation on the fly.
+**Plan for tomorrow:** Final aesthetic polish and deployment.

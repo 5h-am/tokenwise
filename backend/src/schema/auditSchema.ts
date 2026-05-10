@@ -40,7 +40,7 @@ export const toolEntrySchema = z.object({
 });
 
 export const auditInputSchema = z.object({
-  tools: z.array(toolEntrySchema),
+  tools: z.array(toolEntrySchema).min(1),
   teamSize: z.number().min(1),
   avgSessionTurns: z.number().optional(),
   avgSystemPromptTokens: z.number().optional(),

@@ -6,7 +6,8 @@ export const leadInputSchema = z.object({
   companyName: z.string().optional(),
   role: z.string().optional(),
   teamSize: z.number().int().positive().optional(),
-  website: z.string().optional()
+  website: z.string().optional(),
+  screenshot: z.string().optional()
 });
 
 export type LeadInput = z.infer<typeof leadInputSchema>;

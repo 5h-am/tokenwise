@@ -21,6 +21,6 @@ export async function processLead(input: LeadInput): Promise<void> {
   });
 
   if (result.created) {
-    await sendAuditEmail(input.email, isHighSavings);
+    await sendAuditEmail(input.email, isHighSavings, audit.report, input.screenshot);
   }
 }

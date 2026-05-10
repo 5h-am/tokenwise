@@ -16,30 +16,84 @@ function findPlan(spec: ToolSpec, planId: string): PlanSpec | undefined {
   return spec.plans.find((p) => p.id === planId);
 }
 
+function planMonthlyCost(plan: PlanSpec, seats: number): number {
+  return plan.isPerSeat ? plan.monthlyUsd * seats : plan.monthlyUsd;
+}
+
 function findCheaperPlan(spec: ToolSpec, entry: ToolEntry): PlanSpec | undefined {
   const currentPlan = findPlan(spec, entry.planId);
   if (!currentPlan) return undefined;
 
-  const currentCost = currentPlan.isPerSeat
-    ? currentPlan.monthlyUsd * entry.seats
-    : currentPlan.monthlyUsd;
+  const currentCost = planMonthlyCost(currentPlan, entry.seats);
 
   const viableCheaperPlans = spec.plans
     .filter((p) => {
       if (p.id === currentPlan.id) return false;
+      if (p.monthlyUsd === 0) return false;
       if (!p.supportedUseCases.includes(entry.useCase)) return false;
       if (entry.seats < p.minSeats) return false;
       if (p.maxSeats !== null && entry.seats > p.maxSeats) return false;
-      const planCost = p.isPerSeat ? p.monthlyUsd * entry.seats : p.monthlyUsd;
-      return planCost < currentCost;
+      return planMonthlyCost(p, entry.seats) < currentCost;
     })
     .sort((a, b) => {
-      const costA = a.isPerSeat ? a.monthlyUsd * entry.seats : a.monthlyUsd;
-      const costB = b.isPerSeat ? b.monthlyUsd * entry.seats : b.monthlyUsd;
-      return costA - costB;
+      return planMonthlyCost(a, entry.seats) - planMonthlyCost(b, entry.seats);
     });
 
   return viableCheaperPlans[0];
+}
+
+function findCheaperAlternative(entry: ToolEntry): { spec: ToolSpec; plan: PlanSpec; monthlyCost: number } | undefined {
+  const currentSpec = TOOL_SPECS[entry.toolId];
+  if (!currentSpec) return undefined;
+
+  const viableAlternatives = Object.values(TOOL_SPECS)
+    .filter((spec) => spec.id !== entry.toolId)
+    .filter((spec) => spec.functionalCategory === currentSpec.functionalCategory)
+    .flatMap((spec) =>
+      spec.plans
+        .filter((plan) => plan.monthlyUsd > 0)
+        .filter((plan) => plan.supportedUseCases.includes(entry.useCase))
+        .filter((plan) => entry.seats >= plan.minSeats)
+        .filter((plan) => plan.maxSeats === null || entry.seats <= plan.maxSeats)
+        .map((plan) => ({
+          spec,
+          plan,
+          monthlyCost: planMonthlyCost(plan, entry.seats),
+        })),
+    )
+    .filter((candidate) => candidate.monthlyCost < entry.monthlySpend)
+    .sort((a, b) => a.monthlyCost - b.monthlyCost);
+
+  const best = viableAlternatives[0];
+  if (!best) return undefined;
+
+  const monthlySavings = entry.monthlySpend - best.monthlyCost;
+  if (monthlySavings < Math.max(10, entry.monthlySpend * 0.25)) return undefined;
+
+  return best;
+}
+
+function findCreditOpportunity(
+  spec: ToolSpec,
+  entry: ToolEntry,
+  input: AuditInput,
+): { freePlan: PlanSpec; threshold: number } | undefined {
+  const freePlan = spec.plans.find(
+    (plan) =>
+      plan.monthlyUsd === 0 &&
+      plan.supportedUseCases.includes(entry.useCase) &&
+      entry.seats >= plan.minSeats &&
+      (plan.maxSeats === null || entry.seats <= plan.maxSeats),
+  );
+
+  if (!freePlan || !spec.creditNote || entry.seats !== 1 || input.monthlyAISessions == null) {
+    return undefined;
+  }
+
+  const threshold = entry.toolId === 'github_copilot' ? 50 : 25;
+  if (input.monthlyAISessions > threshold) return undefined;
+
+  return { freePlan, threshold };
 }
 
 function findRedundantTools(entry: ToolEntry, allTools: ToolEntry[]): ToolEntry[] {
@@ -57,9 +111,7 @@ function hasSpendAnomaly(spec: ToolSpec, entry: ToolEntry): boolean {
   if (!plan) return false;
   if (entry.monthlySpend === 0) return false;
 
-  const listPrice = plan.isPerSeat
-    ? plan.monthlyUsd * entry.seats
-    : plan.monthlyUsd;
+  const listPrice = planMonthlyCost(plan, entry.seats);
 
   if (listPrice === 0) return false;
 
@@ -70,7 +122,7 @@ function hasSpendAnomaly(spec: ToolSpec, entry: ToolEntry): boolean {
 function auditSingleTool(
   entry: ToolEntry,
   allTools: ToolEntry[],
-  teamSize: number,
+  input: AuditInput,
 ): ToolAuditResult {
   const spec = TOOL_SPECS[entry.toolId];
   const flags: WasteCategory[] = [];
@@ -104,6 +156,7 @@ function auditSingleTool(
 
   let optimizedSpend = entry.monthlySpend;
 
+  const teamSize = input.teamSize;
   const isSoloUser = teamSize === 1 || entry.seats === 1;
   const isTeamPlan =
     entry.planId === 'team' ||
@@ -111,11 +164,32 @@ function auditSingleTool(
     entry.planId === 'enterprise';
 
   const cheaperPlan = findCheaperPlan(spec, entry);
+  const currentPlan = findPlan(spec, entry.planId);
+
+  if (currentPlan && entry.seats > teamSize) {
+    const optimizedSeatCount = Math.max(1, teamSize);
+    const activeSeatCost = currentPlan.isPerSeat
+      ? currentPlan.monthlyUsd * optimizedSeatCount
+      : entry.monthlySpend;
+    const savings = entry.monthlySpend - activeSeatCost;
+    if (savings > 0) {
+      flags.push('underutilised_seats');
+      opportunities.push({
+        category: 'underutilised_seats',
+        toolId: entry.toolId,
+        currentMonthlySpend: entry.monthlySpend,
+        optimizedMonthlySpend: activeSeatCost,
+        monthlySavings: savings,
+        annualSavings: savings * 12,
+        reason: `You are paying for ${entry.seats} seat${entry.seats === 1 ? '' : 's'} while the team size is ${teamSize}. Reducing billing to ${optimizedSeatCount} active seat${optimizedSeatCount === 1 ? '' : 's'} brings this line item to $${activeSeatCost}/mo and saves $${savings.toFixed(2)}/mo.`,
+        action: `Remove ${entry.seats - optimizedSeatCount} unused seat${entry.seats - optimizedSeatCount === 1 ? '' : 's'}`,
+      });
+      optimizedSpend = Math.min(optimizedSpend, activeSeatCost);
+    }
+  }
 
   if (isSoloUser && isTeamPlan && cheaperPlan) {
-    const cheaperCost = cheaperPlan.isPerSeat
-      ? cheaperPlan.monthlyUsd * entry.seats
-      : cheaperPlan.monthlyUsd;
+    const cheaperCost = planMonthlyCost(cheaperPlan, entry.seats);
 
     flags.push('wrong_plan');
     const savings = entry.monthlySpend - cheaperCost;
@@ -133,9 +207,7 @@ function auditSingleTool(
       optimizedSpend = Math.min(optimizedSpend, cheaperCost);
     }
   } else if (cheaperPlan && !isSoloUser) {
-    const cheaperCost = cheaperPlan.isPerSeat
-      ? cheaperPlan.monthlyUsd * entry.seats
-      : cheaperPlan.monthlyUsd;
+    const cheaperCost = planMonthlyCost(cheaperPlan, entry.seats);
 
     flags.push('wrong_plan');
     const savings = entry.monthlySpend - cheaperCost;
@@ -152,6 +224,40 @@ function auditSingleTool(
       });
       optimizedSpend = Math.min(optimizedSpend, cheaperCost);
     }
+  }
+
+  const alternative = findCheaperAlternative(entry);
+  if (alternative) {
+    const savings = entry.monthlySpend - alternative.monthlyCost;
+    flags.push('alternative_tool');
+    opportunities.push({
+      category: 'alternative_tool',
+      toolId: entry.toolId,
+      currentMonthlySpend: entry.monthlySpend,
+      optimizedMonthlySpend: alternative.monthlyCost,
+      monthlySavings: savings,
+      annualSavings: savings * 12,
+      reason: `${alternative.spec.name} ${alternative.plan.label} supports ${entry.useCase.replace(/_/g, ' ')} for ${entry.seats} seat${entry.seats === 1 ? '' : 's'} at $${alternative.monthlyCost}/mo versus your reported $${entry.monthlySpend}/mo, saving $${savings.toFixed(2)}/mo if the team accepts a same-category replacement.`,
+      action: `Evaluate ${alternative.spec.name} ${alternative.plan.label} ($${alternative.monthlyCost}/mo)`,
+    });
+    optimizedSpend = Math.min(optimizedSpend, alternative.monthlyCost);
+  }
+
+  const creditOpportunity = findCreditOpportunity(spec, entry, input);
+  if (creditOpportunity) {
+    const savings = entry.monthlySpend;
+    flags.push('credits_opportunity');
+    opportunities.push({
+      category: 'credits_opportunity',
+      toolId: entry.toolId,
+      currentMonthlySpend: entry.monthlySpend,
+      optimizedMonthlySpend: 0,
+      monthlySavings: savings,
+      annualSavings: savings * 12,
+      reason: `You reported ${input.monthlyAISessions} AI sessions/month for one seat, which is within the ${creditOpportunity.threshold}/month light-use threshold. ${spec.creditNote} Move this user to ${creditOpportunity.freePlan.label} until usage exceeds the free allocation.`,
+      action: `Use ${creditOpportunity.freePlan.label} credits/free tier ($0/mo)`,
+    });
+    optimizedSpend = Math.min(optimizedSpend, 0);
   }
 
   const redundant = findRedundantTools(entry, allTools);
@@ -175,9 +281,7 @@ function auditSingleTool(
     flags.push('spend_anomaly');
     const plan = findPlan(spec, entry.planId);
     if (plan) {
-      const listPrice = plan.isPerSeat
-        ? plan.monthlyUsd * entry.seats
-        : plan.monthlyUsd;
+      const listPrice = planMonthlyCost(plan, entry.seats);
       opportunities.push({
         category: 'spend_anomaly',
         toolId: entry.toolId,
@@ -261,7 +365,7 @@ function selectTopOpportunities(toolResults: ToolAuditResult[]): SavingsOpportun
 
 export function runAudit(input: AuditInput): AuditReport {
   const toolResults: ToolAuditResult[] = input.tools.map((entry) =>
-    auditSingleTool(entry, input.tools, input.teamSize),
+    auditSingleTool(entry, input.tools, input),
   );
 
   const tokenWaste = analyseTokenWaste(input);

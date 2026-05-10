@@ -1,141 +1,88 @@
 # AI Pricing Data
 
+Current as of submission week: May 11, 2026. Every price below traces to an official vendor pricing page.
+
 ## Cursor
 
-- Hobby: Free
-  https://cursor.com/pricing
-  verified 2026-05-07
+Source: https://cursor.com/pricing
 
-- Pro: $20/month
-  https://cursor.com/pricing
-  verified 2026-05-07
-
-- Pro+: $60/month
-  https://cursor.com/pricing
-  verified 2026-05-07
-
-- Ultra: $200/month
-  https://cursor.com/pricing
-  verified 2026-05-07
-
-- Teams / Business: $40/user/month
-  https://cursor.com/pricing
-  verified 2026-05-07
-
-- Enterprise: Custom pricing
-  https://cursor.com/pricing
-  verified 2026-05-07
+- Hobby: $0/mo
+- Pro: $20/mo
+- Pro+: $60/mo
+- Ultra: $200/mo
+- Teams / Business: $40/user/mo
+- Enterprise: custom pricing
 
 ## GitHub Copilot
 
-- Free: Free
-  https://github.com/features/copilot/plans
-  verified 2026-05-07
+Source: https://github.com/features/copilot/plans
 
-- Pro / Individual: $10/month
-  https://github.com/features/copilot/plans
-  verified 2026-05-07
+- Free: $0/mo, includes limited monthly agent/chat requests and completions
+- Pro / Individual: $10/user/mo
+- Pro+: $39/user/mo
+- Business: $19/user/mo
+- Enterprise: $39/user/mo
+- Additional premium requests: $0.04/request where available
 
-- Pro+: $39/month
-  https://github.com/features/copilot/plans
-  verified 2026-05-07
+## Claude
 
-- Business: $19/user/month
-  https://github.com/features/copilot/plans
-  verified 2026-05-07
+Source: https://claude.com/pricing
 
-- Enterprise: $39/user/month
-  https://github.com/features/copilot/plans
-  verified 2026-05-07
+- Free: $0/mo
+- Pro: $20/mo
+- Max: $100/mo entry tier in this audit database
+- Team: $30/user/mo
+- Enterprise: custom pricing
 
-## Claude (Anthropic)
+## ChatGPT
 
-- Free: Free
-  https://claude.com/pricing
-  verified 2026-05-07
+Source: https://openai.com/chatgpt/pricing
 
-- Pro: $20/month
-  https://claude.com/pricing
-  verified 2026-05-07
+- Free: $0/mo
+- Plus: $20/mo
+- Team: $30/user/mo
+- Enterprise: custom pricing
 
-- Max: ~$100–200/month (usage-tiered)
-  https://claude.com/pricing
-  verified 2026-05-07
+## OpenAI API
 
-- Team: $30/user/month
-  https://claude.com/pricing
-  verified 2026-05-07
+Source: https://openai.com/api/pricing
 
-- Enterprise: Custom pricing
-  https://claude.com/pricing
-  verified 2026-05-07
+- Pay-as-you-go token pricing varies by model.
+- This audit uses GPT-4o at $2.50 / 1M input tokens and $10.00 / 1M output tokens.
+- This audit uses GPT-4o mini at $0.15 / 1M input tokens and $0.60 / 1M output tokens.
 
-## Anthropic API Pricing
+## Anthropic API
 
-| Model | Input | Output |
-| --- | --- | --- |
-| Claude Opus 4.6 | $5 / MTok | $25 / MTok |
-| Claude Sonnet 4.6 | $3 / MTok | $15 / MTok |
-| Claude Haiku 4.5 | $1 / MTok | $5 / MTok |
+Source: https://www.anthropic.com/pricing#anthropic-api
 
-> Source: https://claude.com/pricing
-
-## ChatGPT (OpenAI)
-
-- Free: Free
-  https://openai.com/chatgpt/pricing
-  verified 2026-05-07
-
-- Plus: $20/month
-  https://openai.com/chatgpt/pricing
-  verified 2026-05-07
-
-- Team: $30/user/month
-  https://openai.com/chatgpt/pricing
-  verified 2026-05-07
-
-- Enterprise: Custom pricing
-  https://openai.com/chatgpt/pricing
-  verified 2026-05-07
-
-## OpenAI API Pricing
-
-| Model | Input | Output |
-| --- | --- | --- |
-| GPT-5 / flagship | usage-based | |
-| GPT-4.1 mini | cheaper tier | |
-| Embeddings | token-based | |
-
-> Source: https://openai.com/api/pricing
+- Claude Opus 4.6: $5.00 / 1M input tokens, $25.00 / 1M output tokens
+- Claude Sonnet 4.6: $3.00 / 1M input tokens, $15.00 / 1M output tokens
+- Claude Haiku 4.5: $1.00 / 1M input tokens, $5.00 / 1M output tokens
 
 ## Gemini
 
-- Gemini Pro: ~$20/month
-  https://one.google.com/about/google-ai-plans/
-  verified 2026-05-07
+Google AI plans source: https://one.google.com/about/google-ai-plans/
+Gemini API source: https://ai.google.dev/gemini-api/docs/pricing
 
-- Gemini Ultra: ~$250/month
-  https://one.google.com/about/google-ai-plans/
-  verified 2026-05-07
+- Gemini Free: $0/mo
+- Gemini Pro / Google One AI Premium: $20/mo
+- Gemini Ultra / Google One AI Ultra: $250/mo
+- Gemini 2.5 Flash API: free tier available; paid tier starts at $0.30 / 1M text input tokens and $2.50 / 1M output tokens
+- Gemini 2.5 Pro API: free tier available; paid tier starts at $1.25 / 1M input tokens and $10.00 / 1M output tokens for prompts up to 200k tokens
 
-- Gemini API: token-based
-  https://ai.google.dev/gemini-api/docs/pricing
-  verified 2026-05-07
+## Windsurf
 
-## Windsurf (Recommended)
+Source: https://windsurf.com/pricing
 
-- Free: Free
-  https://windsurf.com/pricing
-  verified 2026-05-07
+- Free: $0/mo
+- Pro: $15/mo
+- Teams: $30/user/mo
+- Enterprise: custom pricing
 
-- Pro: ~$15/month
-  https://windsurf.com/pricing
-  verified 2026-05-07
+## v0
 
-- Teams: ~$30/user/month
-  https://windsurf.com/pricing
-  verified 2026-05-07
+Source: https://v0.dev/pricing
 
-- Enterprise: Custom pricing
-  https://windsurf.com/pricing
-  verified 2026-05-07
+- Free: $0/mo
+- Premium: $20/mo
+- Team: $30/user/mo

@@ -5,15 +5,17 @@ import { updateAuditSummary } from '../repositories/auditRepo.js';
 export async function generateAndPersistAuditSummary(
   shareId: string,
   report: AuditReport
-): Promise<void> {
+): Promise<string> {
   const summary = await generateAuditSummary(report);
   await updateAuditSummary(shareId, summary);
+  return summary;
 }
 
 export async function generateAuditSummary(report: AuditReport): Promise<string> {
   try {
     return await requestGeminiSummary(report);
-  } catch {
+  } catch (err) {
+    console.error('[summary] Gemini failed, using fallback:', err);
     return buildFallbackSummary(report);
   }
 }
@@ -24,7 +26,7 @@ function buildFallbackSummary(report: AuditReport): string {
   const annualSavings = report.totalAnnualSavings;
 
   if (savings > 500) {
-    return `Your AI stack is graded ${grade} and shows $${savings} in monthly savings, or $${annualSavings} per year. The biggest opportunities are in the top recommendations above, and the savings level is high enough that Credex should review the stack with you.`;
+    return `Your AI stack is graded ${grade} and shows $${savings} in monthly savings, or $${annualSavings} per year. The biggest opportunities are in the top recommendations above, and the savings level is high enough that Tokenwise should review the stack with you.`;
   }
 
   if (savings > 0) {

@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import { healthRouter } from './routes/health.js';
 import { auditRouter } from './routes/audit.js';
 import { leadRouter } from './routes/lead.js';
@@ -18,7 +19,8 @@ export function createApp() {
   const app = express();
 
   app.set('trust proxy', 1);
-  app.use(express.json());
+  app.use(cors());
+  app.use(express.json({ limit: '10mb' }));
 
   app.use(defaultLimiter);
 

@@ -7,9 +7,12 @@ import { generateAndPersistAuditSummary } from './summaryService.js';
 export async function processAudit(input: AuditInput): Promise<{ shareId: string; report: AuditReport }> {
   const report = runAudit(input);
   const { shareId } = await insertAudit(input, report);
-  void generateAndPersistAuditSummary(shareId, report).catch((error: unknown) => {
+  try {
+    const summary = await generateAndPersistAuditSummary(shareId, report);
+    report.summary = summary;
+  } catch (error) {
     console.error('[summary] Failed to persist audit summary', error);
-  });
+  }
 
   return { shareId, report };
 }

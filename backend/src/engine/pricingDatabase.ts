@@ -19,6 +19,7 @@ export interface ToolSpec {
   pricingUrl: string;
   verifiedAt: string;
   hasTokenCosts: boolean;
+  creditNote?: string;
 }
 
 export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
@@ -28,8 +29,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Anysphere',
     functionalCategory: 'ai_code_editor',
     pricingUrl: 'https://cursor.com/pricing',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Hobby is free for limited Agent requests and Tab completions.',
     plans: [
       { id: 'free', label: 'Hobby (Free)', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
       { id: 'pro', label: 'Pro', monthlyUsd: 20, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
@@ -45,8 +47,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'GitHub / Microsoft',
     functionalCategory: 'ai_code_editor',
     pricingUrl: 'https://github.com/features/copilot/plans',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Free includes 50 agent or chat requests and 2,000 completions per month.',
     plans: [
       { id: 'free', label: 'Free', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
       { id: 'individual', label: 'Pro / Individual', monthlyUsd: 10, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
@@ -61,8 +64,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Anthropic',
     functionalCategory: 'ai_chat_assistant',
     pricingUrl: 'https://claude.com/pricing',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Free covers limited everyday use before paid Plus or Team access is needed.',
     plans: [
       { id: 'free', label: 'Free', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['general_assistant', 'content_writing', 'research', 'code_generation'] },
       { id: 'pro', label: 'Pro', monthlyUsd: 20, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['general_assistant', 'content_writing', 'research', 'code_generation'] },
@@ -77,8 +81,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'OpenAI',
     functionalCategory: 'ai_chat_assistant',
     pricingUrl: 'https://openai.com/chatgpt/pricing',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Free covers limited everyday use before paid Plus, Pro, Team, or Enterprise access is needed.',
     plans: [
       { id: 'free', label: 'Free', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['general_assistant', 'content_writing', 'research', 'code_generation'] },
       { id: 'pro', label: 'Plus', monthlyUsd: 20, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['general_assistant', 'content_writing', 'research', 'code_generation'] },
@@ -92,7 +97,7 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Anthropic',
     functionalCategory: 'ai_api',
     pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: true,
     plans: [
       { id: 'pay_as_you_go', label: 'Pay-as-you-go', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: null, supportedUseCases: ['code_generation', 'content_writing', 'data_analysis', 'customer_support', 'research', 'general_assistant', 'api_integration'] },
@@ -104,7 +109,7 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'OpenAI',
     functionalCategory: 'ai_api',
     pricingUrl: 'https://openai.com/api/pricing',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: true,
     plans: [
       { id: 'pay_as_you_go', label: 'Pay-as-you-go', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: null, supportedUseCases: ['code_generation', 'content_writing', 'data_analysis', 'customer_support', 'research', 'general_assistant', 'api_integration'] },
@@ -116,8 +121,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Google',
     functionalCategory: 'ai_chat_assistant',
     pricingUrl: 'https://one.google.com/about/google-ai-plans/',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Free access is available for basic Gemini usage, and Gemini API has a free tier for supported models.',
     plans: [
       { id: 'free', label: 'Free', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['general_assistant', 'content_writing', 'research'] },
       { id: 'pro', label: 'Gemini Pro (Google One AI Premium)', monthlyUsd: 20, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['general_assistant', 'content_writing', 'research'] },
@@ -130,8 +136,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Codeium',
     functionalCategory: 'ai_code_editor',
     pricingUrl: 'https://windsurf.com/pricing',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Free includes entry-level code-generation usage before Pro or Teams is needed.',
     plans: [
       { id: 'free', label: 'Free', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
       { id: 'pro', label: 'Pro', monthlyUsd: 15, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
@@ -145,8 +152,9 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Vercel',
     functionalCategory: 'ai_ui_generator',
     pricingUrl: 'https://v0.dev/pricing',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
+    creditNote: 'Free supports basic UI generation before Premium or Team usage is needed.',
     plans: [
       { id: 'free', label: 'Free', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
       { id: 'pro', label: 'Premium', monthlyUsd: 20, isPerSeat: false, minSeats: 1, maxSeats: 1, supportedUseCases: ['code_generation'] },
@@ -159,7 +167,7 @@ export const TOOL_SPECS: Record<ToolId, ToolSpec> = {
     vendor: 'Unknown',
     functionalCategory: 'other',
     pricingUrl: '',
-    verifiedAt: '2026-05-07',
+    verifiedAt: '2026-05-11',
     hasTokenCosts: false,
     plans: [
       { id: 'pay_as_you_go', label: 'Custom', monthlyUsd: 0, isPerSeat: false, minSeats: 1, maxSeats: null, supportedUseCases: ['code_generation', 'content_writing', 'data_analysis', 'customer_support', 'research', 'general_assistant', 'image_generation', 'api_integration'] },
@@ -178,11 +186,11 @@ export interface ModelTier {
 }
 
 export const MODEL_TIERS: ModelTier[] = [
-  { id: 'claude-opus-4-6', vendor: 'anthropic', inputPricePerMTok: 5.0, outputPricePerMTok: 25.0, cachedInputPricePerMTok: 0.5, pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api', verifiedAt: '2026-05-07' },
-  { id: 'claude-sonnet-4-6', vendor: 'anthropic', inputPricePerMTok: 3.0, outputPricePerMTok: 15.0, cachedInputPricePerMTok: 0.3, pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api', verifiedAt: '2026-05-07' },
-  { id: 'claude-haiku-4-5', vendor: 'anthropic', inputPricePerMTok: 1.0, outputPricePerMTok: 5.0, cachedInputPricePerMTok: 0.1, pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api', verifiedAt: '2026-05-07' },
-  { id: 'gpt-4o', vendor: 'openai', inputPricePerMTok: 2.5, outputPricePerMTok: 10.0, cachedInputPricePerMTok: 1.25, pricingUrl: 'https://openai.com/api/pricing', verifiedAt: '2026-05-07' },
-  { id: 'gpt-4o-mini', vendor: 'openai', inputPricePerMTok: 0.15, outputPricePerMTok: 0.6, cachedInputPricePerMTok: 0.075, pricingUrl: 'https://openai.com/api/pricing', verifiedAt: '2026-05-07' },
+  { id: 'claude-opus-4-6', vendor: 'anthropic', inputPricePerMTok: 5.0, outputPricePerMTok: 25.0, cachedInputPricePerMTok: 0.5, pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api', verifiedAt: '2026-05-11' },
+  { id: 'claude-sonnet-4-6', vendor: 'anthropic', inputPricePerMTok: 3.0, outputPricePerMTok: 15.0, cachedInputPricePerMTok: 0.3, pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api', verifiedAt: '2026-05-11' },
+  { id: 'claude-haiku-4-5', vendor: 'anthropic', inputPricePerMTok: 1.0, outputPricePerMTok: 5.0, cachedInputPricePerMTok: 0.1, pricingUrl: 'https://www.anthropic.com/pricing#anthropic-api', verifiedAt: '2026-05-11' },
+  { id: 'gpt-4o', vendor: 'openai', inputPricePerMTok: 2.5, outputPricePerMTok: 10.0, cachedInputPricePerMTok: 1.25, pricingUrl: 'https://openai.com/api/pricing', verifiedAt: '2026-05-11' },
+  { id: 'gpt-4o-mini', vendor: 'openai', inputPricePerMTok: 0.15, outputPricePerMTok: 0.6, cachedInputPricePerMTok: 0.075, pricingUrl: 'https://openai.com/api/pricing', verifiedAt: '2026-05-11' },
 ];
 
 export const FUNCTIONAL_CATEGORIES: Record<string, string> = {
