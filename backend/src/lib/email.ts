@@ -1,14 +1,15 @@
 import nodemailer from 'nodemailer';
-import { Resend } from 'resend';
+import dns from 'node:dns';
 import type { AuditReport } from '../engine/types.js';
 
-const resend = process.env['RESEND_API_KEY'] ? new Resend(process.env['RESEND_API_KEY']) : null;
+// Force Node to use IPv4 first to prevent ETIMEDOUT on Render's IPv6 network
+dns.setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
-  connectionTimeout: 15_000,
-  greetingTimeout: 15_000,
-  socketTimeout: 20_000,
+  connectionTimeout: 20_000,
+  greetingTimeout: 20_000,
+  socketTimeout: 30_000,
   auth: {
     user: process.env['GMAIL_USER'],
     pass: process.env['GMAIL_APP_PASSWORD'],
@@ -16,6 +17,11 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendAuditEmail(email: string, isHighSavings: boolean, report: AuditReport, screenshot?: string): Promise<void> {
+  if (!process.env['GMAIL_USER'] || !process.env['GMAIL_APP_PASSWORD']) {
+    console.error('GMAIL_USER or GMAIL_APP_PASSWORD is not configured');
+    return;
+  }
+
   const subject = 'Your Credex AI Spend Audit Results';
   let html = `
     <h2>Your AI Spend Audit Results</h2>
@@ -41,49 +47,25 @@ export async function sendAuditEmail(email: string, isHighSavings: boolean, repo
   }
 
   try {
-    if (resend) {
-      const attachments = [];
-      if (screenshot && screenshot.includes('base64,')) {
-        attachments.push({
+    const mailOptions: any = {
+      from: `"Credex AI" <${process.env['GMAIL_USER']}>`,
+      to: email,
+      subject,
+      html,
+    };
+
+    if (screenshot && screenshot.includes('base64,')) {
+      mailOptions.attachments = [
+        {
           filename: 'Audit_Report.png',
-          content: screenshot.split('base64,')[1],
-        });
-      }
-      
-      // Use Resend when RESEND_API_KEY is available (solves Render SMTP blocking)
-      await resend.emails.send({
-        from: 'Credex AI <onboarding@resend.dev>', // Update with your verified domain in production
-        to: email,
-        subject,
-        html,
-        attachments: attachments.length > 0 ? attachments : undefined,
-      });
-      console.log(`[email] Sent audit result to ${email} via Resend`);
-    } else {
-      if (!process.env['GMAIL_USER'] || !process.env['GMAIL_APP_PASSWORD']) {
-        console.error('Neither RESEND_API_KEY nor GMAIL credentials are fully configured');
-        return;
-      }
-      const mailOptions: any = {
-        from: `"Credex AI" <${process.env['GMAIL_USER']}>`,
-        to: email,
-        subject,
-        html,
-      };
-
-      if (screenshot && screenshot.includes('base64,')) {
-        mailOptions.attachments = [
-          {
-            filename: 'Audit_Report.png',
-            content: screenshot.split('base64,')[1],
-            encoding: 'base64',
-          },
-        ];
-      }
-
-      await transporter.sendMail(mailOptions);
-      console.log(`[email] Sent audit result to ${email} via Nodemailer`);
+          content: screenshot.split('base64,')[1] ?? '',
+          encoding: 'base64',
+        },
+      ];
     }
+
+    await transporter.sendMail(mailOptions);
+    console.log(`[email] Sent audit result to ${email}`);
   } catch (error) {
     console.error(`[email] Failed to send email to ${email}:`, error);
   }
