@@ -81,7 +81,8 @@ export function ResultsPage({ report, shareUrl, demoMode = false }: ResultsPageP
                 </Link>
               </div>
             ) : (
-              <LeadCaptureForm shareId={report.shareId} isHighSavings={report.credexRecommended} />
+              {/* <LeadCaptureForm shareId={report.shareId} isHighSavings={report.credexRecommended} /> */}
+              null
             )}
             <ShareBlock shareId={report.shareId} shareUrlFromServer={shareUrl} />
           </div>
