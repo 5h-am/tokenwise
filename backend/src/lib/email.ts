@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
+import dns from 'node:dns';
 import type { AuditReport } from '../engine/types.js';
+
+dns.setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
