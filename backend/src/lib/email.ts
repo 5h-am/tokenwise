@@ -2,7 +2,12 @@ import nodemailer from 'nodemailer';
 import type { AuditReport } from '../engine/types.js';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  connectionTimeout: 15_000,
+  greetingTimeout: 15_000,
+  socketTimeout: 20_000,
   auth: {
     user: process.env['GMAIL_USER'],
     pass: process.env['GMAIL_APP_PASSWORD'],
