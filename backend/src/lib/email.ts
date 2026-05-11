@@ -5,6 +5,7 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
+  family: 4,
   connectionTimeout: 15_000,
   greetingTimeout: 15_000,
   socketTimeout: 20_000,
@@ -12,7 +13,7 @@ const transporter = nodemailer.createTransport({
     user: process.env['GMAIL_USER'],
     pass: process.env['GMAIL_APP_PASSWORD'],
   },
-});
+} as any);
 
 export async function sendAuditEmail(email: string, isHighSavings: boolean, report: AuditReport, screenshot?: string): Promise<void> {
   if (!process.env['GMAIL_USER'] || !process.env['GMAIL_APP_PASSWORD']) {
