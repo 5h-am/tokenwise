@@ -67,6 +67,7 @@ export function ResultsPage({ report, shareUrl, demoMode = false }: ResultsPageP
           <UnitEconomicsStrip economics={report.unitEconomics} />
 
           <div className={styles.footerGrid}>
+            {/*
             {demoMode ? (
               <div className={styles.shareLeadCard}>
                 <h3 className={styles.footerCardTitle}>Export Full Report</h3>
@@ -81,9 +82,9 @@ export function ResultsPage({ report, shareUrl, demoMode = false }: ResultsPageP
                 </Link>
               </div>
             ) : (
-              {/* <LeadCaptureForm shareId={report.shareId} isHighSavings={report.credexRecommended} /> */}
               null
             )}
+            */}
             <ShareBlock shareId={report.shareId} shareUrlFromServer={shareUrl} />
           </div>
 
