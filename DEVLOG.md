@@ -73,3 +73,10 @@ Part 3 had its own small blocker: `trust proxy` on the Express app. The rate lim
 - **Express Payload Limits:** Sending a Base64-encoded screenshot from the frontend (`html2canvas`) resulted in a `413 Request Entity Too Large` error. Express `body-parser` defaults to a strict 100kb limit. Bumping it up with `express.json({ limit: '10mb' })` cleanly resolved the crash.
 **Blockers / what I'm stuck on:** Overcame significant hurdles around email domain limitations and Gemini API versioning by writing custom diagnostic scripts and pivoting the implementation on the fly.
 **Plan for tomorrow:** Final aesthetic polish and deployment.
+
+## Day 6 - 2026-05-11 (Session 2)
+**Hours worked:** 2
+**What I did:** Added the deployment-readiness layer: Render config, Vercel config, Supabase migration files, production CORS, Supabase SSL handling, environment setup notes, and a split backend/frontend CI workflow. I also fixed the frontend build so it does not depend on fetching Google Fonts during CI, added ESLint wiring for the frontend, and verified the backend and frontend checks locally.
+**What I learned:** Next.js production builds can fail in locked-down environments if `next/font/google` has to fetch fonts during build time. Switching to system font fallbacks made the build repeatable, which matters more for CI than having one exact typeface.
+**Blockers / what I'm stuck on:** The first Vitest run failed because the Windows sandbox blocked access while loading the config file. Running the same test command outside the sandbox passed all 12 tests, so it was an environment issue rather than an app issue.
+**Plan for tomorrow:** Finish the remaining submission docs and do one final deployment checklist pass.

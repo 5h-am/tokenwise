@@ -44,9 +44,9 @@
   --color-complexity-low: #6cf8bb;
   --color-complexity-medium: #ffb690;
   --color-complexity-high: #ffdad6;
-  --font-heading: var(--font-heading, "Hanken Grotesk"), sans-serif;
-  --font-body: var(--font-body, "Inter"), sans-serif;
-  --font-mono: var(--font-mono, "JetBrains Mono"), monospace;
+  --font-heading: "Segoe UI", Arial, sans-serif;
+  --font-body: "Segoe UI", Arial, sans-serif;
+  --font-mono: "Cascadia Mono", "Consolas", monospace;
   --text-display-lg-size: 3rem;
   --text-display-lg-line: 1.1;
   --text-display-lg-weight: 800;
