@@ -761,14 +761,48 @@
   color: var(--color-on-primary);
   padding: 0.625em 1em;
   font-weight: 700;
+  min-height: 2.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.submitPdf:hover:not(:disabled) {
+  background: var(--color-brand-primary-container);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-0.0625rem);
+}
+
+.submitPdf:active:not(:disabled) {
+  box-shadow: none;
+  transform: translateY(0.0625rem);
 }
 
 .submitPdf:disabled {
-  opacity: 0.7;
+  cursor: wait;
+  opacity: 0.85;
+}
+
+.submitPdf:disabled .material-symbols-outlined {
+  animation: spin 900ms linear infinite;
+}
+
+.formStatus {
+  margin-top: var(--space-xs);
+  color: var(--color-on-surface-variant);
+  font-size: var(--text-body-sm-size);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .formError {

@@ -16,6 +16,7 @@ export function LeadCaptureForm({ shareId, isHighSavings }: LeadCaptureFormProps
   const [role, setRole] = useState('')
   const [website, setWebsite] = useState('')
   const [busy, setBusy] = useState(false)
+  const [statusText, setStatusText] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
@@ -31,6 +32,7 @@ export function LeadCaptureForm({ shareId, isHighSavings }: LeadCaptureFormProps
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
+    setStatusText(null)
     if (website.trim() !== '') {
       setDone(true)
       return
@@ -39,6 +41,7 @@ export function LeadCaptureForm({ shareId, isHighSavings }: LeadCaptureFormProps
     try {
       let screenshot: string | undefined = undefined;
       try {
+        setStatusText('Preparing report preview...')
         const html2canvas = (await import('html2canvas')).default
         const canvasElement = document.querySelector('main') || document.body
         const canvas = await html2canvas(canvasElement as HTMLElement, {
@@ -51,6 +54,7 @@ export function LeadCaptureForm({ shareId, isHighSavings }: LeadCaptureFormProps
         console.error('Failed to capture screenshot', screenshotError)
       }
 
+      setStatusText('Sending report...')
       await submitLead({
         shareId,
         email: email.trim(),
@@ -66,6 +70,7 @@ export function LeadCaptureForm({ shareId, isHighSavings }: LeadCaptureFormProps
       setError(err instanceof Error ? err.message : 'Could not submit. Please try again.')
     } finally {
       setBusy(false)
+      setStatusText(null)
     }
   }
 
@@ -148,11 +153,16 @@ export function LeadCaptureForm({ shareId, isHighSavings }: LeadCaptureFormProps
           className={styles.honeypot}
         />
         <button className={styles.submitPdf} type="submit" disabled={busy}>
-          Send My Report
+          {busy ? statusText ?? 'Sending...' : 'Send My Report'}
           <span className="material-symbols-outlined" aria-hidden="true">
-            arrow_forward
+            {busy ? 'progress_activity' : 'arrow_forward'}
           </span>
         </button>
+        {busy && statusText ? (
+          <div className={styles.formStatus} role="status" aria-live="polite">
+            {statusText}
+          </div>
+        ) : null}
         {error ? (
           <div className={styles.formError} role="status">
             {error}
