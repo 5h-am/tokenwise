@@ -13,8 +13,7 @@ It is built as a two-service app: a Next.js frontend for the audit flow and resu
 
 ## Deployed URL
 
-<!-- SHAM: Replace this with the final Vercel deployment URL before submission. -->
-Pending: `https://your-vercel-project.vercel.app`
+https://tokenwise-aiig.vercel.app/
 
 ## Quick Start
 
